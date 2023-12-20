@@ -30,4 +30,19 @@ public class ProductsController : ControllerBase
         }
         return Ok(product);
     }
+    [HttpPost]
+    public async Task<ActionResult<Product>> PostProduct(Product product)
+    {
+        // if (!ModelState.IsValid)
+        // {
+        //     return BadRequest();
+        // }
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(
+            "GetProduct",
+            new { id = product.Id },
+            product);
+    }
 }
