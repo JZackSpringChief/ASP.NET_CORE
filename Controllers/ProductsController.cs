@@ -1,14 +1,33 @@
+using HPlusSport.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HPlusSport.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    [HttpGet]
-    public string GetProducts()
+    private readonly ShopContext _context;
+    public ProductsController(ShopContext context)
     {
-        return "OK";
+        _context = context;
+        _context.Database.EnsureCreated();
+    }
+    [HttpGet]
+    public async Task<ActionResult> GetAllProducts()
+    {
+        return Ok(await _context.Products.ToArrayAsync());
+    }
+    //[HttpGet][Route("/api/products/{id}")] or
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetProduct(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+        return Ok(product);
     }
 }
